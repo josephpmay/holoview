@@ -1,6 +1,8 @@
 #include <iostream>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+
 
 class RoomMap {
   void load_map (const std::string&);
@@ -24,6 +26,11 @@ void RoomMap::load_map (const std::string& fileName)
                 << " " << cloud->points[i].y
                 << " " << cloud->points[i].z <<std::endl;
 }
+
+//void RoomMap::extract_features()
+//{
+
+//}
 
 int
 main ()
