@@ -1,0 +1,250 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Mutant Underwater Pangolin Adventures! Now with bunnies!</title>
+        <style type="text/CSS">
+            body{
+                background-color:rgb(30,30,30);
+                text-align:center;
+            }
+            canvas{
+                background-color:rgb(50,80,130);
+            }
+        </style>
+        <script type="text/javascript">
+            can="";
+            function initiate(){
+                can=document.getElementById("can").getContext("2d");
+                activeObjects=[new player(170,280,0,0)];
+                x=self.setInterval("update()",20);
+                y=self.setInterval("display()",40);
+                anigen=new animalGenerator();
+                z=self.setInterval("anigen.update()",500);
+            }
+            function interpret_key(evt){
+                if(evt==83||evt==40||evt==87||evt==38||evt==65||evt==37||evt==68||evt==39||evt==32){
+                    signal=evt;
+                }
+            }
+            
+            
+            
+            
+            function player(px,py,vx,vy){//ie pangolin
+                this.px=px;
+                this.py=py;
+                this.vx=vx;
+                this.vy=vy;
+                //this.health=3;
+                this.height=40;
+                this.width=150;
+                pango=new Image();
+                pango.src="Pangolin_small.png";
+                this.kills=0;
+                this.update=function(){
+                    this.vx*=.4;
+                    this.vy*=.4;
+                    this.px=.99*this.px+.01*170;
+                    this.py=.99*this.py+.01*280;
+                    if(this.px<150){
+                        this.vx=0;
+                    }
+                    if(signal==38||signal==87){
+                        this.vy-=2;
+                    }
+                    else if(signal==40||signal==83){
+                        this.vy+=2;
+                    }
+                    else if(signal==39||signal==68){
+                        this.vx+=2;
+                    }
+                    else if(signal==37||signal==65){
+                        this.vx-=2;
+                    }
+                    else if(signal==32){
+                        activeObjects.push(new tongue(this.px+this.width,this.py+this.height/2,this.kills))//shoot. dunno how to implement this now, will work on it later
+                    }
+                    this.px+=Math.round(this.vx);
+                    this.py+=Math.round(this.vy);
+                    if (this.py<50){
+                        this.vy+=7;
+                    }
+                    for(i=1;i<activeObjects.length;i++){
+                        if((activeObjects[i].py<this.py+this.height)&&(activeObjects[i].py+activeObjects[i].height>this.py)&&(activeObjects[i].px>this.px)&&(activeObjects[i].px<this.px+this.width)){
+                            //activeObjects[i].px<this.px+this.width&&activeObjects[i].py<this.py+this.height&&activeObjects[i].py+activeObjects[i].height>this.py&&activeObjects[i].px+activeObjects[i].width>this.px
+                            //this.health-=1;
+                            //document.getElementById("health").innerHTML=this.health;
+                            this.kills+=1;
+                            activeObjects.splice(i,1);
+                            i-=1;
+                            document.getElementById("kills").innerHTML=activeObjects[0].kills;
+                        }
+                    }
+                    /*if(this.health<0){
+                        alert("You Died! Your score was: "+activeObjects[0].kills+".")
+                        activeObjects=[];
+                        signal="";
+                        score=0;
+                        initiate();
+                        document.getElementById("health").innerHTML=3;
+                        document.getElementById("kills").innerHTML=0;
+                    }*/
+                }
+                this.display=function(){
+                    can.fillStyle="rgb(255,255,255)";
+                    can.drawImage(pango,this.px,this.py)//can.fillRect(this.px,this.py,150,40);
+                }
+            }
+            
+            /*function tongue(px,py,kills){
+                this.px=px;
+                this.py=py;
+                this.height=5;
+                this.width=10*(kills+1);
+                this.update=function(){
+                    for(i=1;i<activeObjects.length;i++){
+                        if((activeObjects[i].py<this.py+this.height)&&(activeObjects[i].py+activeObjects[i].height>this.py)&&(activeObjects[i].px>this.px)&&(activeObjects[i].px<this.px+this.width)){
+                            activeObjects[0].kills+=1;
+                            document.getElementById("kills").innerHTML=activeObjects[0].kills;
+                            activeObjects.splice(i,1);
+                            i-=1;
+                        }
+                    }
+                }
+                this.display=function(){
+                    can.fillStyle="rgb(255,150,150);";
+                    can.fillRect(this.px,this.py,this.width,this.height);
+                }
+            }
+            */
+            
+            function vulture(px,py,vx,vy){//will implement if I have time and motivation...
+                this.px=px;
+                this.py=py;
+                this.vx=vx;
+                this.vy=vy;
+                this.update=function(){
+                    
+                }
+                this.display=function(){
+                    can.fillStyle="rgb(70,30,70)";
+                    can.fillRect(this.px,this.py,100,70);
+                }
+            }
+            function nemo(px,py,vx,vy,mindepth){
+                this.px=px;
+                this.py=py;
+                this.vx=vx;
+                this.vy=vy;
+                this.mindepth=mindepth;
+                this.width=100;
+                this.height=40;
+                fishy=new Image();
+                fishy.src="fishy_small.png"
+                this.update=function(){
+                    if(this.py<this.mindepth||this.py>750){
+                        this.vy=-this.vy;
+                    }
+                    this.px+=Math.round(this.vx);
+                    this.py+=Math.round(this.vy);
+                }
+                this.display=function(){
+                    can.fillStyle="rgb(250,180,50)";
+                    can.drawImage(fishy,this.px,this.py);//can.fillRect(this.px,this.py,this.width,this.height);
+                }
+            }
+            function parrot(px,py,vx,vy,maxdepth){
+                this.px=px;
+                this.py=py;
+                this.vx=vx;
+                this.vy=vy;
+                this.width=70;
+                this.height=100;
+                birdy=new Image();
+                birdy.src="birdy_small.png";
+                this.update=function(){
+                    this.px+=Math.round(this.vx);
+                    this.py+=Math.round(this.vy);
+                    if(this.py>maxdepth){
+                        this.vy=-this.vy;
+                    }
+                    else if (this.py<-100){
+                        this.vy=-this.vy;
+                    }
+                }
+                this.display=function(){
+                    can.fillStyle="rgb(250,0,0)";
+                    can.drawImage(birdy,this.px,this.py);//can.fillRect(this.px,this.py,this.width,this.height);
+                }
+            }
+            function bunny(px,py,vx,vy,stability){
+                this.px=px;
+                this.py=py;
+                this.vx=vx;
+                this.vy=vy;
+                this.width=40;
+                this.height=40;
+                buni=new Image();
+                buni.src="bunny_small.png"
+                this.update=function(){
+                    this.px+=Math.round(this.vx);
+                    this.py+=Math.round(this.vy);
+                    this.vy+=stability*(Math.random()-.5);
+                    if(this.py<100){
+                        this.vy=-this.vy;
+                    }
+                }
+                this.display=function(){
+                    can.fillStyle="rgb(70,70,70)";
+                    can.drawImage(buni,this.px,this.py)//can.fillRect(this.px,this.py,this.width,this.height);
+                }
+            }
+            
+            
+            
+            
+            
+            function update(){
+                for(O=0;O<activeObjects.length;O++){
+                    activeObjects[O].update();
+                    if(activeObjects[O].px<-100){
+                        activeObjects.splice(O,1);
+                        O-=1;
+                    }
+                }
+            }
+            function display(){
+                can.clearRect(0,0,1000,600);
+                can.fillStyle="rgb(200,200,255)";
+                can.fillRect(0,0,1000,100);
+                for(O=1;O<activeObjects.length;O++){
+                    activeObjects[O].display();
+                }
+                    activeObjects[0].display();
+            }
+            
+            function animalGenerator(){
+                this.pr=.3;
+                this.update=function(){
+                    this.pr+=.003;
+                    if(Math.random()<this.pr){
+                        activeObjects.push(new nemo(1100,Math.round(700+300*Math.random()),-7*Math.random(),-2-3*Math.random(),Math.round(350+200*Math.random())));
+                    }
+                    if(Math.random()<this.pr/5){
+                        activeObjects.push(new parrot(1100,Math.round(-99*Math.random()),-5*Math.random(),7*Math.random(),Math.round(200*Math.random())));
+                    }
+                    if(Math.random()<this.pr-.2){
+                        activeObjects.push(new bunny(1100,Math.round(200+200*Math.random()),-7*Math.random(),0,.25*Math.random()));
+                    }
+                }
+            }
+            activeObjects=[];
+            signal="";
+            score=0;
+        </script>
+    </head>
+    <body onload="initiate();" onkeydown="interpret_key(event.which);">
+        <canvas id="can" height="600px" width="1000px"></canvas>
+        <div style="background-color:rgba(0,0,0,0); position:absolute;z-index:3;left:50%;top:7px;font-family:Arial">Kills: <span id="kills">0</span><!-- | Health:<span id="health">3--></span></div>
+    </body>
+</html>
