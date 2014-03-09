@@ -2,10 +2,12 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-
+#include <string>
+#include <pcl/keypoints/sift_keypoint.h>
 
 class RoomMap {
   void load_map (const std::string&);
+  void extract_normal_features(const pcl::PointCloud<pcl::PointXYZ& cloudInput)
 };
 
 
@@ -27,15 +29,29 @@ void RoomMap::load_map (const std::string& fileName)
                 << " " << cloud->points[i].z <<std::endl;
 }
 
-//void RoomMap::extract_features()
-//{
+void RoomMap::extract_normal_features(const pcl::PointCloud<pcl::PointXYZ& cloudInput)
+{
+  pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
+  ne.setInputCloud (cloudInput);
 
-//}
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
+  ne.setSearchMethod (tree);
+
+  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
+
+  ne.compute (*cloud_normals);
+}
+
+void RoomMap::extract_feature_keypoints()
+{
+  
+}
 
 int
 main ()
   {
       RoomMap livingRoom;
       livingRoom.load_map ("map.pcb");
+      livingRoom.extract_normal_features(cloud);
       return (0);
   }
